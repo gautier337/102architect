@@ -1,0 +1,93 @@
+#!/usr/bin/env python3
+
+from sys import argv, exit
+import math
+from math import *
+
+def main():
+
+    if (len(argv) == 2):
+        if (argv[1] == '-h'):
+            print("USAGE")
+            print("    ./102architect x y transfo1 arg11 [arg12] [transfo2 arg12 [arg22]] ...\n")
+            print("DESCRIPTION")
+            print("    x abscissa of the original point")
+            print("    y ordinate of the original point\n")
+            print("    transfo arg1 [arg2]")
+            print("    -t i j translation along vector (i, j)")
+            print("    -z m n scaling by factors m (x-axis) and n (y-axis)")
+            print("    -r d rotation centered in O by a d degree angle")
+            print("    -s d reflection over the axis passing through O with an inclination angle of d degrees")
+            return 0
+
+    if len(argv) > 6 or len(argv) < 5:
+        print("Bad length of arguments")
+        return 84
+
+    if (argv[1] != "-h"):
+
+        try:
+            x = int(argv[1])
+            y = int(argv[2])
+            floatx = float(x)
+            floaty = float(y)
+        except ValueError:
+            print("Wrong arguments")
+            return 84
+
+        if not (argv[3] == "-t" or argv[3] == "-z" or argv[3] == "-r" or argv[3] == "-s"):
+            print("Wrong arguments")
+            return 84
+
+        lenght = len(argv);
+        i = 0
+        matrix = [1.00, 0.00, 0.00,
+                   0.00, 1.00, 0.00,
+                   0.00, 0.00, 1.00]
+
+        while (i < lenght):
+
+            if argv[i] == "-t" :
+                print("Translation along vector (", argv[4], ", ", argv[5], ")", sep = "")
+                matrix[2] = float(argv[i + 1]) + matrix[2]
+                matrix[5] = float(argv[i + 2]) + matrix[5]
+
+            if argv[i] == "-z" :
+                print("Scaling by factors", argv[4], "and", argv[i + 2])
+                matrix[0] = float(argv[i + 1]) * matrix[0]
+                matrix[4] = float(argv[i + 2]) * matrix[4]
+
+            if argv[i] == "-r" :
+                if (len(argv) > 5):
+                    print("Too much arguments")
+                    return 84
+
+                print("Rotation by a", argv[4], "degree angle")
+                matrix[0] = math.cos(float(argv[i + 1]) / 180 * math.pi)
+                matrix[1] = -math.sin(float(argv[i + 1]) / 180 * math.pi)
+                matrix[3] = math.sin(float(argv[i + 1]) / 180 * math.pi)
+                matrix[4] = matrix[0]
+
+            if argv[i] == "-s" :
+                if (len(argv) > 5):
+                    print("Too much arguments")
+                    return 84
+                print("Reflection over an axis with an inclination angle of", argv[4], "degrees")
+                matrix[0] = math.cos(2 * float(argv[i + 1]) / 180 * math.pi)
+                matrix[1] = math.sin(2 * float(argv[i + 1]) / 180 * math.pi)
+                matrix[3] = math.sin(2 * float(argv[i + 1]) / 180 * math.pi)
+                matrix[4] = -matrix[0]
+
+            i += 1
+
+        transform1 = matrix[0] * floatx + matrix[1] * floaty + matrix[2]
+        transform2 = matrix[3] * floatx + matrix[4] * floaty + matrix[5]
+
+        print("%.2f\t%.2f\t%.2f" %(matrix[0], matrix[1], matrix[2]))
+        print("%.2f\t%.2f\t%.2f" %(matrix[3], matrix[4], matrix[5]))
+        print("%.2f\t%.2f\t%.2f" %(matrix[6], matrix[7], matrix[8]))
+        print("(%.2f, %.2f) => (%.2f, %.2f)" %(floatx, floaty, transform1, transform2), sep = "")
+        return 0
+
+if __name__ == "__main__":
+    exit(main())
